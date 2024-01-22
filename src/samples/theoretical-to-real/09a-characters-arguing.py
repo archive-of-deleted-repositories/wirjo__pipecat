@@ -8,6 +8,7 @@ from dailyai.services.daily_transport_service import DailyTransportService
 from dailyai.services.azure_ai_services import AzureLLMService, AzureTTSService
 from dailyai.services.elevenlabs_ai_service import ElevenLabsTTSService
 from dailyai.services.fal_ai_services import FalImageGenService
+from dailyai.services.open_ai_services import OpenAIImageGenService
 from dailyai.queue_frame import QueueFrame, FrameType
 
 async def main(room_url:str):
@@ -19,7 +20,7 @@ async def main(room_url:str):
         room_url,
         None,
         "Respond bot",
-        5,
+        600,
     )
     transport.mic_enabled = True
     transport.mic_sample_rate = 16000
@@ -31,12 +32,13 @@ async def main(room_url:str):
     tts1 = AzureTTSService()
     tts2 = ElevenLabsTTSService()
     dalle = FalImageGenService(image_size="1024x1024")
+    # dalle = OpenAIImageGenService(image_size="1024x1024")
 
     bot1_messages = [
-        {"role": "system", "content": "You are a stern librarian. You strongly believe that a hot dog is a sandwich. Start by stating this fact in a few sentences, then be prepared to debate this with the user. Your responses should only be a few sentences long."},
+        {"role": "system", "content": "You are a stern librarian. You strongly believe that a hot dog is a sandwich. Start by stating this fact in a few sentences, then be prepared to debate this with the user. You shouldn't ever compromise on the fundamental truth that a hot dog is a sandwich. Your responses should only be a few sentences long."},
     ]
     bot2_messages = [
-        {"role": "system", "content": "You are a silly cat, and you strongly believe that a hot dog is not a sandwich. Debate this with the user, only responding with a few sentences."},
+        {"role": "system", "content": "You are a silly cat, and you strongly believe that a hot dog is not a sandwich. Debate this with the user, only responding with a few sentences. Don't ever accept that a hot dog is a sandwich."},
     ]
     
     async def get_bot1_statement():
@@ -66,10 +68,10 @@ async def main(room_url:str):
         return all_audio
 
     async def argue():
-        for i in range(1, 5):
+        for i in range(100):
             print(f"In iteration {i}")
 
-            bot1_description = "An older woman dressed as a librarian, cartoon, serious, highly detailed, 8k"
+            bot1_description = "A woman conservatively dressed as a librarian in a library surrounded by books, cartoon, serious, highly detailed"
 
             (audio1, image_data1) = await asyncio.gather(
                 get_bot1_statement(), dalle.run_image_gen(bot1_description)
@@ -81,7 +83,7 @@ async def main(room_url:str):
                 ]
             )
 
-            bot2_description = "A cat dressed in a hot dog costume, cartoon, bright colors, funny, highly detailed, 8k"
+            bot2_description = "A cat dressed in a hot dog costume, cartoon, bright colors, funny, highly detailed"
 
             (audio2, image_data2) = await asyncio.gather(
                 get_bot2_statement(), dalle.run_image_gen(bot2_description)
