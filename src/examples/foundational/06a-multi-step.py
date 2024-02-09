@@ -8,7 +8,7 @@ from dailyai.services.azure_ai_services import AzureLLMService, AzureTTSService
 from dailyai.services.open_ai_services import OpenAILLMService
 from dailyai.services.elevenlabs_ai_service import ElevenLabsTTSService
 from dailyai.queue_aggregators import LLMAssistantContextAggregator, LLMContextAggregator, LLMUserContextAggregator
-from samples.foundational.support.runner import configure
+from examples.foundational.support.runner import configure
 from dailyai.queue_frame import LLMMessagesQueueFrame, TranscriptionQueueFrame, QueueFrame, TextQueueFrame
 from dailyai.services.ai_services import FrameLogger, AIService
 
@@ -77,12 +77,12 @@ async def main(room_url: str, token):
 
         messages = [
         ]
-        tma_in = LLMUserContextAggregator(messages, transport.my_participant_id)
-        tma_out = LLMAssistantContextAggregator(messages, transport.my_participant_id)
+        tma_in = LLMUserContextAggregator(messages, transport._my_participant_id)
+        tma_out = LLMAssistantContextAggregator(messages, transport._my_participant_id)
         checklist = ChecklistProcessor(messages, llm)
 
         async def handle_transcriptions():
-            tf = TranscriptFilter(transport.my_participant_id)
+            tf = TranscriptFilter(transport._my_participant_id)
             await tts.run_to_queue(
                 transport.send_queue,
                 checklist.run(
