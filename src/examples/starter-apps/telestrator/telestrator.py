@@ -26,37 +26,18 @@ logging.basicConfig(format=f"%(levelno)s %(asctime)s %(message)s")
 logger = logging.getLogger("dailyai")
 logger.setLevel(logging.DEBUG)
 
-narrators = [
-    {
-        "voice_id": "wDRBdcyPzQOCeq51IxW5",
-        "prompt": "Describe the image in one sentence, in the style of David Attenborough."
-    },
-    {
-        "voice_id": "M3bAX0o3Ptb2l6XqwQJV",
-        "prompt": "Describe the image in one sentence, in the style of John Oliver's Last Week Tonight show."
-    },
-    {
-        "voice_id": "lJm5d2ZZ3UE4qYOxl2t7",
-        "prompt": "Describe the image in one sentence, in the style of Oprah Winfrey."
-    },
-    {
-        "voice_id": "7SNUlQ8GAbnZxRO9CKOt",
-        "prompt": "Describe the image in one sentence, in the style of a royal pronouncement by the Queen of England."
-    },
-    {
-        "voice_id": "PWEz02ggFiibL6P5PKRx",
-        "prompt": "Describe the image in one sentence, in the style of Kanye West."
-    },
-    {
-        "voice_id": "gvpBhHjzfd7M2WedYVUI",
-        "prompt": "Describe the image in one sentence, in the style of Captain Picard from Star Trek."
-    },
-    {
-        "voice_id": "bnyr1EF3snReVXauGBNn",
-        "prompt": "Describe the image in one sentence, in the style of Maya Angelou."
-
-    }
-]
+narrators = [{"voice_id": "wDRBdcyPzQOCeq51IxW5",
+              "prompt": "Describe the image in one sentence, in the style of David Attenborough."},
+             {"voice_id": "M3bAX0o3Ptb2l6XqwQJV",
+              "prompt": "Describe the image in one sentence, in the style of John Oliver's Last Week Tonight show."},
+             {"voice_id": "lJm5d2ZZ3UE4qYOxl2t7",
+              "prompt": "Describe the image in one sentence, in the style of Oprah Winfrey."},
+             {"voice_id": "7SNUlQ8GAbnZxRO9CKOt",
+              "prompt": "Describe the image in one sentence, in the style of a royal pronouncement by the Queen of England."},
+             {"voice_id": "gvpBhHjzfd7M2WedYVUI",
+              "prompt": "Describe the image in one sentence, in the style of Captain Picard from Star Trek."},
+             {"voice_id": "bnyr1EF3snReVXauGBNn",
+              "prompt": "Describe the image in one sentence, in the style of Maya Angelou."}]
 
 random.shuffle(narrators)
 print(f"$$$ narrators: {narrators}")
