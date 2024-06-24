@@ -6,12 +6,14 @@
 
 from loguru import logger
 from runner import configure
+import argparse
 import asyncio
 import aiohttp
 import os
 import sys
-from typing import List
+from typing import List, Optional
 
+from pydantic import BaseModel, ValidationError
 
 from pipecat.vad.vad_analyzer import VADParams
 from pipecat.vad.silero import SileroVADAnalyzer
@@ -41,17 +43,29 @@ from fastbothelpers import (
 from dotenv import load_dotenv
 load_dotenv(override=True)
 
-
 logger.remove(0)
 logger.add(sys.stderr, level="DEBUG")
 
 
-async def main(room_url: str, token):
+class BotSettings(BaseModel):
+    room_url: str
+    room_token: str
+    bot_name: str = "Pipecat"
+    prompt: Optional[str] = "You are a helpful LLM in a WebRTC call. Your goal is to demonstrate your capabilities in a succinct way. Respond to what the user said in a creative and helpful way in a few short sentences."
+    deepgram_api_key: Optional[str] = None
+    deepgram_voice: Optional[str] = "aura-asteria-en"
+    deepgram_base_url: Optional[str] = "https://api.deepgram.com/v1/speak"
+    openai_api_key: Optional[str] = None
+    openai_model: Optional[str] = "gpt-4o"
+    openai_base_url: Optional[str] = None
+
+
+async def main(settings: BotSettings):
     async with aiohttp.ClientSession() as session:
         transport = DailyTransport(
-            room_url,
-            token,
-            "Respond bot",
+            settings.room_url,
+            settings.room_token,
+            settings.bot_name,
             DailyParams(
                 audio_out_enabled=True,
                 transcription_enabled=False,
@@ -163,6 +177,18 @@ Respond to what the user said in a creative and helpful way. Be concise in your 
         await runner.run(task)
 
 
+# if __name__ == "__main__":
+#     (url, token) = configure()
+#     asyncio.run(main(url, token))
+
 if __name__ == "__main__":
-    (url, token) = configure()
-    asyncio.run(main(url, token))
+    parser = argparse.ArgumentParser(description="Pipecat Bot")
+    parser.add_argument("-s", "--settings", type=str, required=True, help="Pipecat bot settings")
+
+    args, unknown = parser.parse_known_args()
+
+    try:
+        settings = BotSettings.model_validate_json(args.settings)
+        asyncio.run(main(settings))
+    except ValidationError as e:
+        print(e)
