@@ -22,16 +22,10 @@ from openai.types.chat import ChatCompletionToolParam
 from runner import configure
 
 from pipecat.audio.vad.silero import SileroVADAnalyzer, VADParams
-from pipecat.frames.frames import (
-    BotSpeakingFrame,
-    EndFrame,
-    Frame,
-    InputAudioRawFrame,
-    LLMMessagesFrame,
-    TTSAudioRawFrame,
-    TextFrame,
-    UserStoppedSpeakingFrame,
-)
+from pipecat.frames.frames import (BotSpeakingFrame, EndFrame, Frame,
+                                   InputAudioRawFrame, LLMMessagesFrame,
+                                   TextFrame, TTSAudioRawFrame,
+                                   UserStoppedSpeakingFrame)
 from pipecat.pipeline.pipeline import Pipeline
 from pipecat.pipeline.runner import PipelineRunner
 from pipecat.pipeline.task import PipelineParams, PipelineTask
@@ -302,18 +296,7 @@ async def end_call(
         "Estimated End Call Sentence Time is {estimated_time_end_call_sentence}",
         estimated_time_end_call_sentence=estimated_time_end_call_sentence,
     )
-    if voice_provider == "cartesia":
-        await say_agent_response(
-            get_cartesia_static_response(
-                end_call_sentence,
-                voice_id,
-                "sonic-english",
-                output_format={"container": "raw", "encoding": "pcm_s16le", "sample_rate": 16000},
-            ),
-            transport,
-            estimated_time_end_call_sentence,
-            True,
-        )
+    await llm.push_frame(TextFrame(end_call_sentence))
     await transport.stop_dialout(PARTICIPANT_ID[0])
     await result_callback("CALL ENDED BY ASSISTANT")
 
@@ -366,10 +349,10 @@ async def main():
                 type="function",
                 function={
                     "name": "get_knowledge_base",
-                    "description": """""Always Use this tool:
-                - When User have Questions about Company
-                - If user is not showing interest and you need to convince them by using information about Company
-                - When User have any General Query and Questions
+                    "description": """""
+                Used to find information from the knowledge base. Use this tool in the following scenarios:
+                    - When the user asks questions about the company.
+                    - If user is not showing interest and you need to convince them by using information about the company
             """,
                     "strict": True,  # type: ignore[typeddict-unknown-key]
                     "parameters": {
@@ -377,7 +360,7 @@ async def main():
                         "properties": {
                             "question": {
                                 "type": "string",
-                                "description": "User Question/Concern about Company",
+                                "description": "User questions or concerns about the Company",
                             },
                             "reason": {
                                 "type": "string",
@@ -473,7 +456,7 @@ async def main():
                 llm,  # LLM
                 dp_post_llm,  # Debug Processor
                 tts,  # TTS
-                # dp_post_tts,  # Debug Processor
+                dp_post_tts,  # Debug Processor
                 transport.output(),  # Transport bot output
                 context_aggregator.assistant(),  # Assistant spoken responses
             ]
@@ -518,9 +501,9 @@ async def main():
             def _handle_dialout_completion(task: asyncio.Task) -> None:
                 asyncio.create_task(_dialout_task_exception(task))
 
-            # if state == "joined":
-            #     task = transport.input().get_event_loop().create_task(_dialout_retry_handler())
-            #     task.add_done_callback(_handle_dialout_completion)
+            if state == "joined":
+                task = transport.input().get_event_loop().create_task(_dialout_retry_handler())
+                task.add_done_callback(_handle_dialout_completion)
 
         # Event handler for on_first_participant_joined
         @transport.event_handler("on_first_participant_joined")
