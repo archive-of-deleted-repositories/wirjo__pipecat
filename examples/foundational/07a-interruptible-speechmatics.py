@@ -59,9 +59,6 @@ async def run_example(transport: BaseTransport, _: argparse.Namespace, handle_si
     instructions in the system context for the LLM. This greatly improves the conversation
     experience by allowing the LLM to understand who is speaking in a multi-party call.
 
-    If you do not wish to use diarization, then set the `enable_speaker_diarization` parameter
-    to `False` or omit it altogether. The `text_format` will only be used if diarization is enabled.
-
     By default, this example will use our ENHANCED operating point, which is optimized for
     high accuracy. You can change this by setting the `operating_point` parameter to a different
     value.
@@ -73,14 +70,17 @@ async def run_example(transport: BaseTransport, _: argparse.Namespace, handle_si
 
     stt = SpeechmaticsSTTService(
         api_key=os.getenv("SPEECHMATICS_API_KEY"),
-        language=Language.EN,
-        enable_speaker_diarization=True,
-        text_format="<{speaker_id}>{text}</{speaker_id}>",
+        params=SpeechmaticsSTTService.InputParams(
+            language=Language.EN,
+            enable_diarization=True,
+            end_of_utterance_silence_trigger=0.5,
+            speaker_active_format="<{speaker_id}>{text}</{speaker_id}>",
+        ),
     )
 
     tts = ElevenLabsTTSService(
-        api_key=os.getenv("ELEVENLABS_API_KEY", ""),
-        voice_id=os.getenv("ELEVENLABS_VOICE_ID", ""),
+        api_key=os.getenv("ELEVENLABS_API_KEY"),
+        voice_id=os.getenv("ELEVENLABS_VOICE_ID"),
         model="eleven_turbo_v2_5",
     )
 
