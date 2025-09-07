@@ -9,6 +9,7 @@
 import base64
 import json
 import time
+import warnings
 from dataclasses import dataclass
 from typing import Optional
 
@@ -92,6 +93,10 @@ class CurrentAudioResponse:
 class OpenAIRealtimeBetaLLMService(LLMService):
     """OpenAI Realtime Beta LLM service providing real-time audio and text communication.
 
+    .. deprecated:: 0.0.84
+        `OpenAIRealtimeBetaLLMService` is deprecated, use `OpenAIRealtimeLLMService` instead.
+        This class will be removed in version 1.0.0.
+
     Implements the OpenAI Realtime API Beta with WebSocket communication for low-latency
     bidirectional audio and text interactions. Supports function calling, conversation
     management, and real-time transcription.
@@ -124,6 +129,15 @@ class OpenAIRealtimeBetaLLMService(LLMService):
             send_transcription_frames: Whether to emit transcription frames. Defaults to True.
             **kwargs: Additional arguments passed to parent LLMService.
         """
+        with warnings.catch_warnings():
+            warnings.simplefilter("always")
+            warnings.warn(
+                "OpenAIRealtimeBetaLLMService is deprecated and will be removed in version 1.0.0. "
+                "Use OpenAIRealtimeLLMService instead.",
+                DeprecationWarning,
+                stacklevel=2,
+            )
+
         full_url = f"{base_url}?model={model}"
         super().__init__(base_url=full_url, **kwargs)
 
