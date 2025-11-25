@@ -16,7 +16,7 @@ from pipecat.processors.aggregators.openai_llm_context import OpenAILLMContext
 from pipecat.services.openai.llm import OpenAILLMService
 
 
-class NimLLMService(OpenAILLMService):
+class NvidiaLLMService(OpenAILLMService):
     """A service for interacting with NVIDIA's NIM (NVIDIA Inference Microservice) API.
 
     This service extends OpenAILLMService to work with NVIDIA's NIM API while maintaining
@@ -32,7 +32,7 @@ class NimLLMService(OpenAILLMService):
         model: str = "nvidia/llama-3.1-nemotron-70b-instruct",
         **kwargs,
     ):
-        """Initialize the NimLLMService.
+        """Initialize the NvidiaLLMService.
 
         Args:
             api_key: The API key for accessing NVIDIA's NIM API.

@@ -37,13 +37,13 @@ try:
 
 except ModuleNotFoundError as e:
     logger.error(f"Exception: {e}")
-    logger.error("In order to use NVIDIA Riva TTS, you need to `pip install pipecat-ai[riva]`.")
+    logger.error("In order to use NVIDIA Riva TTS, you need to `pip install pipecat-ai[nvidia]`.")
     raise Exception(f"Missing module: {e}")
 
 RIVA_TTS_TIMEOUT_SECS = 5
 
 
-class RivaTTSService(TTSService):
+class NvidiaTTSService(TTSService):
     """NVIDIA Riva text-to-speech service.
 
     Provides high-quality text-to-speech synthesis using NVIDIA Riva's
@@ -89,7 +89,7 @@ class RivaTTSService(TTSService):
         """
         super().__init__(sample_rate=sample_rate, **kwargs)
 
-        params = params or RivaTTSService.InputParams()
+        params = params or NvidiaTTSService.InputParams()
 
         self._api_key = api_key
         self._voice_id = voice_id
@@ -186,11 +186,11 @@ class RivaTTSService(TTSService):
         yield TTSStoppedFrame()
 
 
-class FastPitchTTSService(RivaTTSService):
+class FastPitchTTSService(NvidiaTTSService):
     """Deprecated FastPitch TTS service.
 
     .. deprecated:: 0.0.66
-        This class is deprecated. Use RivaTTSService instead for new implementations.
+        This class is deprecated. Use NvidiaTTSService instead for new implementations.
         Provides backward compatibility for existing FastPitch TTS integrations.
     """
 
@@ -205,7 +205,7 @@ class FastPitchTTSService(RivaTTSService):
             "function_id": "0149dedb-2be8-4195-b9a0-e57e0e14f972",
             "model_name": "fastpitch-hifigan-tts",
         },
-        params: Optional[RivaTTSService.InputParams] = None,
+        params: Optional[NvidiaTTSService.InputParams] = None,
         **kwargs,
     ):
         """Initialize the deprecated FastPitch TTS service.
@@ -217,7 +217,7 @@ class FastPitchTTSService(RivaTTSService):
             sample_rate: Audio sample rate. If None, uses service default.
             model_function_map: Dictionary containing function_id and model_name for FastPitch model.
             params: Additional configuration parameters for TTS synthesis.
-            **kwargs: Additional arguments passed to parent RivaTTSService.
+            **kwargs: Additional arguments passed to parent NvidiaTTSService.
         """
         super().__init__(
             api_key=api_key,
@@ -233,6 +233,6 @@ class FastPitchTTSService(RivaTTSService):
         with warnings.catch_warnings():
             warnings.simplefilter("always")
             warnings.warn(
-                "`FastPitchTTSService` is deprecated, use `RivaTTSService` instead.",
+                "`FastPitchTTSService` is deprecated, use `NvidiaTTSService` instead.",
                 DeprecationWarning,
             )

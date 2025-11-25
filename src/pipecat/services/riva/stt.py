@@ -32,7 +32,7 @@ try:
 
 except ModuleNotFoundError as e:
     logger.error(f"Exception: {e}")
-    logger.error("In order to use NVIDIA Riva STT, you need to `pip install pipecat-ai[riva]`.")
+    logger.error("In order to use NVIDIA Riva STT, you need to `pip install pipecat-ai[nvidia]`.")
     raise Exception(f"Missing module: {e}")
 
 
@@ -88,7 +88,7 @@ def language_to_riva_language(language: Language) -> Optional[str]:
     return resolve_language(language, LANGUAGE_MAP, use_base_code=False)
 
 
-class RivaSTTService(STTService):
+class NvidiaSTTService(STTService):
     """Real-time speech-to-text service using NVIDIA Riva streaming ASR.
 
     Provides real-time transcription capabilities using NVIDIA's Riva ASR models
@@ -130,7 +130,7 @@ class RivaSTTService(STTService):
         """
         super().__init__(sample_rate=sample_rate, **kwargs)
 
-        params = params or RivaSTTService.InputParams()
+        params = params or NvidiaSTTService.InputParams()
 
         self._api_key = api_key
         self._profanity_filter = False
@@ -661,11 +661,11 @@ class RivaSegmentedSTTService(SegmentedSTTService):
             yield ErrorFrame(error=f"Unknown error occurred: {e}")
 
 
-class ParakeetSTTService(RivaSTTService):
+class ParakeetSTTService(NvidiaSTTService):
     """Deprecated speech-to-text service using NVIDIA Parakeet models.
 
     .. deprecated:: 0.0.66
-        This class is deprecated. Use `RivaSTTService` instead for equivalent functionality
+        This class is deprecated. Use `NvidiaSTTService` instead for equivalent functionality
         with Parakeet models by specifying the appropriate model_function_map.
     """
 
@@ -679,7 +679,7 @@ class ParakeetSTTService(RivaSTTService):
             "model_name": "parakeet-ctc-1.1b-asr",
         },
         sample_rate: Optional[int] = None,
-        params: Optional[RivaSTTService.InputParams] = None,  # Use parent class's type
+        params: Optional[NvidiaSTTService.InputParams] = None,  # Use parent class's type
         **kwargs,
     ):
         """Initialize the Parakeet STT service.
@@ -690,7 +690,7 @@ class ParakeetSTTService(RivaSTTService):
             model_function_map: Mapping containing 'function_id' and 'model_name' for Parakeet model.
             sample_rate: Audio sample rate in Hz. If None, uses pipeline default.
             params: Additional configuration parameters for Riva.
-            **kwargs: Additional arguments passed to RivaSTTService.
+            **kwargs: Additional arguments passed to NvidiaSTTService.
         """
         super().__init__(
             api_key=api_key,
@@ -705,6 +705,6 @@ class ParakeetSTTService(RivaSTTService):
         with warnings.catch_warnings():
             warnings.simplefilter("always")
             warnings.warn(
-                "`ParakeetSTTService` is deprecated, use `RivaSTTService` instead.",
+                "`ParakeetSTTService` is deprecated, use `NvidiaSTTService` instead.",
                 DeprecationWarning,
             )
