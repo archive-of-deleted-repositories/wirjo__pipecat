@@ -54,7 +54,7 @@ async def run_bot(transport: BaseTransport, runner_args: RunnerArguments):
 
     tts = RimeTTSService(
         api_key=os.getenv("RIME_API_KEY"),
-        voice_id="eva",
+        voice_id="luna",
     )
 
     llm = OpenAILLMService(api_key=os.getenv("OPENAI_API_KEY"))
@@ -100,8 +100,8 @@ async def run_bot(transport: BaseTransport, runner_args: RunnerArguments):
         await task.queue_frames([LLMRunFrame()])
 
         await asyncio.sleep(10)
-        logger.info("Updating Rime TTS settings: voice=rex")
-        await task.queue_frame(TTSUpdateSettingsFrame(update=RimeTTSSettings(voice="rex")))
+        logger.info("Updating Rime TTS settings: voice=bond")
+        await task.queue_frame(TTSUpdateSettingsFrame(update=RimeTTSSettings(voice="bond")))
 
     @transport.event_handler("on_client_disconnected")
     async def on_client_disconnected(transport, client):
