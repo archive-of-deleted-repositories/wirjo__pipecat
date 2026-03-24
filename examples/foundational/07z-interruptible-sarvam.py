@@ -21,7 +21,7 @@ from pipecat.processors.aggregators.llm_response_universal import (
 )
 from pipecat.runner.types import RunnerArguments
 from pipecat.runner.utils import create_transport
-from pipecat.services.openai.llm import OpenAILLMService
+from pipecat.services.sarvam.llm import SarvamLLMService
 from pipecat.services.sarvam.stt import SarvamSTTService
 from pipecat.services.sarvam.tts import SarvamTTSService
 from pipecat.transports.base_transport import BaseTransport, TransportParams
@@ -55,20 +55,20 @@ async def run_bot(transport: BaseTransport, runner_args: RunnerArguments):
     stt = SarvamSTTService(
         api_key=os.getenv("SARVAM_API_KEY"),
         settings=SarvamSTTService.Settings(
-            model="saarika:v2.5",
+            model="saaras:v3",
         ),
     )
 
     tts = SarvamTTSService(
         api_key=os.getenv("SARVAM_API_KEY"),
         settings=SarvamTTSService.Settings(
-            model="bulbul:v2",
-            voice="manisha",
+            model="bulbul:v3",
+            voice="shubh",
         ),
     )
-    llm = OpenAILLMService(
-        api_key=os.getenv("OPENAI_API_KEY"),
-        settings=OpenAILLMService.Settings(
+    llm = SarvamLLMService(
+        api_key=os.getenv("SARVAM_API_KEY"),
+        settings=SarvamLLMService.Settings(
             system_instruction="You are a helpful assistant in a voice conversation. Your responses will be spoken aloud, so avoid emojis, bullet points, or other formatting that can't be spoken. Respond to what the user said in a creative, helpful, and brief way.",
         ),
     )
@@ -96,6 +96,7 @@ async def run_bot(transport: BaseTransport, runner_args: RunnerArguments):
         params=PipelineParams(
             enable_metrics=True,
             enable_usage_metrics=True,
+            allow_interruptions=True,
         ),
     )
 
