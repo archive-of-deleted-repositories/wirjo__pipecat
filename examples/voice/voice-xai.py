@@ -24,7 +24,7 @@ from pipecat.runner.types import RunnerArguments
 from pipecat.runner.utils import create_transport
 from pipecat.services.xai.llm import GrokLLMService
 from pipecat.services.xai.stt import XAISTTService
-from pipecat.services.xai.tts import XAIHttpTTSService
+from pipecat.services.xai.tts import XAITTSService
 from pipecat.transports.base_transport import BaseTransport, TransportParams
 from pipecat.transports.daily.transport import DailyParams
 from pipecat.transports.websocket.fastapi import FastAPIWebsocketParams
@@ -55,10 +55,10 @@ async def run_bot(transport: BaseTransport, runner_args: RunnerArguments):
     async with aiohttp.ClientSession() as session:
         stt = XAISTTService(api_key=os.environ["XAI_API_KEY"])
 
-        tts = XAIHttpTTSService(
+        tts = XAITTSService(
             api_key=os.environ["XAI_API_KEY"],
             aiohttp_session=session,
-            settings=XAIHttpTTSService.Settings(
+            settings=XAITTSService.Settings(
                 voice="eve",
             ),
         )
