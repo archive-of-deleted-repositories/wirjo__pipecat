@@ -21,7 +21,7 @@ judge:
     model: base
 
 turns:
-  - user: "What's the weather in San Francisco? Use Fahrenheit."
+  - user: "What's the weather in San Francisco, California? Use Fahrenheit."
     expect:
       - event: function_call
         calls:
