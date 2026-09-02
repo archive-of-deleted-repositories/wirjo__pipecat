@@ -182,8 +182,8 @@ async def run_bot(transport: BaseTransport, runner_args: RunnerArguments):
         await runner.cancel()
 
     @llm.event_handler("on_delegation_created")
-    async def on_delegation_created(llm, item):
-        logger.info(f"Delegated to the backend: {item.text}")
+    async def on_delegation_created(llm, delegation):
+        logger.info(f"Delegated to the backend: {delegation.id}")
 
     @user_aggregator.event_handler("on_user_turn_message_added")
     async def on_user_turn_message_added(aggregator, message: UserTurnMessageAddedMessage):
